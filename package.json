@@ -1,0 +1,107 @@
+{
+  "name": "tab-zone",
+  "displayName": "tab.zone",
+  "description": "Copilot-style tab autocomplete powered by a local Ollama server.",
+  "version": "0.0.1",
+  "publisher": "studiomedio",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Machine Learning",
+    "Programming Languages"
+  ],
+  "keywords": [
+    "ollama",
+    "autocomplete",
+    "copilot",
+    "inline completion",
+    "ai",
+    "local llm"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "tabZone.toggle",
+        "title": "tab.zone: Toggle inline completions"
+      }
+    ],
+    "configuration": {
+      "title": "tab.zone",
+      "properties": {
+        "tabZone.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline (ghost text) completions."
+        },
+        "tabZone.endpoint": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Base URL of the local Ollama server."
+        },
+        "tabZone.model": {
+          "type": "string",
+          "default": "qwen2.5-coder:7b",
+          "description": "Ollama model to use. Must be a fill-in-the-middle (FIM) capable code model."
+        },
+        "tabZone.fimTemplate": {
+          "type": "string",
+          "enum": [
+            "qwen",
+            "codellama",
+            "starcoder",
+            "deepseek"
+          ],
+          "default": "qwen",
+          "description": "Fill-in-the-middle prompt template matching the selected model family."
+        },
+        "tabZone.debounceMs": {
+          "type": "number",
+          "default": 250,
+          "description": "Delay after the last keystroke before requesting a completion (ms)."
+        },
+        "tabZone.maxPrefixChars": {
+          "type": "number",
+          "default": 3000,
+          "description": "Maximum characters of context taken from before the cursor."
+        },
+        "tabZone.maxSuffixChars": {
+          "type": "number",
+          "default": 1000,
+          "description": "Maximum characters of context taken from after the cursor."
+        },
+        "tabZone.maxTokens": {
+          "type": "number",
+          "default": 256,
+          "description": "Maximum number of tokens to generate per completion."
+        },
+        "tabZone.temperature": {
+          "type": "number",
+          "default": 0.1,
+          "description": "Sampling temperature. Lower is more deterministic."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "esbuild ./src/extension.ts --bundle --outfile=dist/extension.js --external:vscode --format=cjs --platform=node",
+    "watch": "npm run compile -- --sourcemap --watch",
+    "package": "npm run compile -- --minify",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "esbuild": "^0.24.0",
+    "typescript": "^5.4.0"
+  },
+  "allowScripts": {
+    "esbuild@0.24.2": true
+  }
+}
