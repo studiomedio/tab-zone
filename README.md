@@ -1,8 +1,6 @@
 # tab.zone
 
-Copilot-style **tab autocomplete for VS Code, powered by a local [Ollama](https://ollama.com) server**. Your code never leaves your machine.
-
-Inline (ghost-text) completions appear as you type; press <kbd>Tab</kbd> to accept.
+Copilot-style **tab autocomplete for VS Code, powered by a local [Ollama](https://ollama.com) server**. Your code never leaves your machine. Inline (ghost-text) completions appear as you type; press <kbd>Tab</kbd> to accept.
 
 ## Requirements
 
@@ -38,7 +36,13 @@ ext install studiomedio.tab-zone
 | `tabZone.maxLines` | `4` | Max lines kept from a completion. `1` = strict single-line, `0` = no limit. |
 | `tabZone.temperature` | `0.1` | Sampling temperature. Lower is more deterministic. |
 
-Run **tab.zone: Toggle inline completions** from the Command Palette to turn suggestions on/off.
+## Usage
+
+As you type, suggestions appear as grey ghost text — press <kbd>Tab</kbd> to accept.
+
+Toggle completions on/off by clicking the **tab.zone** item in the status bar, or by running **tab.zone: Toggle inline completions** from the Command Palette. The status-bar icon shows the current state:
+
+![tab.zone status-bar toggle showing ON (sparkle) and OFF (circle-slash) states](assets/status-bar-toggle.png)
 
 ## Development
 

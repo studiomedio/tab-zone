@@ -5,6 +5,15 @@
   "version": "0.0.1",
   "publisher": "studiomedio",
   "license": "MIT",
+  "icon": "assets/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/studiomedio/tab-zone.git"
+  },
+  "homepage": "https://tab.zone",
+  "bugs": {
+    "url": "https://github.com/studiomedio/tab-zone/issues"
+  },
   "engines": {
     "vscode": "^1.85.0"
   },
