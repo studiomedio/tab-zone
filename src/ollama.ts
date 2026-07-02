@@ -41,18 +41,23 @@ function buildFimPrompt(template: FimTemplate, prefix: string, suffix: string): 
 /**
  * Stop tokens that indicate the model has finished the infill. Passed to
  * Ollama so generation halts early instead of running to maxTokens.
+ *
+ * A trailing blank line ("\n\n") is included for every template: it marks a
+ * natural block boundary and keeps completions short and snappy rather than
+ * letting the model ramble on to the token cap.
  */
 function stopTokens(template: FimTemplate): string[] {
+  const blockBoundary = "\n\n";
   switch (template) {
     case "qwen":
     case "starcoder":
-      return ["<|fim_prefix|>", "<|fim_suffix|>", "<|fim_middle|>", "<|endoftext|>", "<|file_sep|>"];
+      return ["<|fim_prefix|>", "<|fim_suffix|>", "<|fim_middle|>", "<|endoftext|>", "<|file_sep|>", blockBoundary];
     case "codellama":
-      return ["<PRE>", "<SUF>", "<MID>", "<EOT>"];
+      return ["<PRE>", "<SUF>", "<MID>", "<EOT>", blockBoundary];
     case "deepseek":
-      return ["<｜fim▁begin｜>", "<｜fim▁hole｜>", "<｜fim▁end｜>", "<|EOT|>"];
+      return ["<｜fim▁begin｜>", "<｜fim▁hole｜>", "<｜fim▁end｜>", "<|EOT|>", blockBoundary];
     default:
-      return ["<|endoftext|>"];
+      return ["<|endoftext|>", blockBoundary];
   }
 }
 

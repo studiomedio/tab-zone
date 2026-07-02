@@ -46,8 +46,8 @@
         },
         "tabZone.model": {
           "type": "string",
-          "default": "qwen2.5-coder:7b",
-          "description": "Ollama model to use. Must be a fill-in-the-middle (FIM) capable code model."
+          "default": "qwen2.5-coder:3b",
+          "description": "Ollama model to use. Must be a fill-in-the-middle (FIM) capable code model. Smaller models (1.5b/3b) are much faster and usually sufficient for line completion."
         },
         "tabZone.fimTemplate": {
           "type": "string",
@@ -77,8 +77,13 @@
         },
         "tabZone.maxTokens": {
           "type": "number",
-          "default": 256,
-          "description": "Maximum number of tokens to generate per completion."
+          "default": 128,
+          "description": "Maximum number of tokens to generate per completion. Lower is faster."
+        },
+        "tabZone.maxLines": {
+          "type": "number",
+          "default": 4,
+          "description": "Maximum number of lines to keep from a completion. Set to 1 for strict single-line completions, or 0 to disable the limit."
         },
         "tabZone.temperature": {
           "type": "number",

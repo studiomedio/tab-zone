@@ -1,0 +1,5 @@
+{
+  // The extension builds clean (tsc --noEmit + esbuild both pass), so don't let
+  // errors from other workspace folders block F5. Launch without prompting.
+  "debug.onTaskErrors": "debugAnyway"
+}

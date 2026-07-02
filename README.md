@@ -7,11 +7,13 @@ Inline (ghost-text) completions appear as you type; press <kbd>Tab</kbd> to acce
 ## Requirements
 
 - [Ollama](https://ollama.com) running locally (default `http://localhost:11434`)
-- A fill-in-the-middle (FIM) capable code model, e.g.:
+- A fill-in-the-middle (FIM) capable code model. **tab.zone doesn't download models for you** — pull one first. The default model is `qwen2.5-coder:3b`:
 
   ```sh
-  ollama pull qwen2.5-coder:7b
+  ollama pull qwen2.5-coder:3b
   ```
+
+  `3b` is a good speed/quality balance for line completion. For faster, lighter suggestions use `qwen2.5-coder:1.5b`; for higher quality use `qwen2.5-coder:7b`. Whichever you pull, set `tabZone.model` to match (and `tabZone.fimTemplate` to the model family).
 
 ## Install
 
@@ -27,12 +29,13 @@ ext install studiomedio.tab-zone
 | --- | --- | --- |
 | `tabZone.enabled` | `true` | Enable inline (ghost text) completions. |
 | `tabZone.endpoint` | `http://localhost:11434` | Base URL of the local Ollama server. |
-| `tabZone.model` | `qwen2.5-coder:7b` | Ollama FIM-capable code model to use. |
+| `tabZone.model` | `qwen2.5-coder:3b` | Ollama FIM-capable code model to use. Smaller (1.5b/3b) = faster. |
 | `tabZone.fimTemplate` | `qwen` | FIM prompt template matching the model family (`qwen`, `codellama`, `starcoder`, `deepseek`). |
 | `tabZone.debounceMs` | `250` | Delay after the last keystroke before requesting a completion. |
 | `tabZone.maxPrefixChars` | `3000` | Max characters of context taken from before the cursor. |
 | `tabZone.maxSuffixChars` | `1000` | Max characters of context taken from after the cursor. |
-| `tabZone.maxTokens` | `256` | Max tokens generated per completion. |
+| `tabZone.maxTokens` | `128` | Max tokens generated per completion. Lower is faster. |
+| `tabZone.maxLines` | `4` | Max lines kept from a completion. `1` = strict single-line, `0` = no limit. |
 | `tabZone.temperature` | `0.1` | Sampling temperature. Lower is more deterministic. |
 
 Run **tab.zone: Toggle inline completions** from the Command Palette to turn suggestions on/off.

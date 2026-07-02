@@ -3,9 +3,14 @@ import { fetchCompletion, FimTemplate } from "./ollama";
 
 let enabled = true;
 let statusBar: vscode.StatusBarItem;
+let log: vscode.OutputChannel;
 
 export function activate(context: vscode.ExtensionContext) {
   enabled = getConfig<boolean>("enabled", true);
+
+  log = vscode.window.createOutputChannel("tab.zone");
+  context.subscriptions.push(log);
+  log.appendLine("tab.zone activated");
 
   statusBar = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
   statusBar.command = "tabZone.toggle";
@@ -14,7 +19,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   const provider = new OllamaCompletionProvider();
   context.subscriptions.push(
-    vscode.languages.registerInlineCompletionItemProvider({ pattern: "**" }, provider)
+    vscode.languages.registerInlineCompletionItemProvider(
+      [{ scheme: "file" }, { scheme: "untitled" }],
+      provider
+    )
   );
 
   context.subscriptions.push(
@@ -52,6 +60,8 @@ class OllamaCompletionProvider implements vscode.InlineCompletionItemProvider {
       return undefined;
     }
 
+    log.appendLine(`invoked @ ${document.uri.scheme}:${position.line}:${position.character}`);
+
     // Debounce: wait, then bail if the user kept typing (token cancels).
     const debounceMs = getConfig<number>("debounceMs", 250);
     const settled = await sleep(debounceMs, token);
@@ -61,6 +71,7 @@ class OllamaCompletionProvider implements vscode.InlineCompletionItemProvider {
 
     const { prefix, suffix } = extractContext(document, position);
     if (prefix.trim().length === 0) {
+      log.appendLine("skip: empty prefix");
       return undefined;
     }
 
@@ -79,7 +90,8 @@ class OllamaCompletionProvider implements vscode.InlineCompletionItemProvider {
         signal: controller.signal,
       });
 
-      const completion = trimCompletion(raw);
+      const completion = trimCompletion(raw, getConfig<number>("maxLines", 4));
+      log.appendLine(`got ${raw.length} chars raw, ${completion.length} after trim`);
       if (!completion || token.isCancellationRequested) {
         return undefined;
       }
@@ -95,7 +107,7 @@ class OllamaCompletionProvider implements vscode.InlineCompletionItemProvider {
       if (controller.signal.aborted || token.isCancellationRequested) {
         return undefined;
       }
-      console.error("[tab.zone] completion failed:", err);
+      log.appendLine(`completion failed: ${err instanceof Error ? err.message : String(err)}`);
       return undefined;
     } finally {
       cancelSub.dispose();
@@ -120,11 +132,19 @@ function extractContext(
 }
 
 /**
- * Drop a leading newline the model sometimes emits, and cut trailing
- * whitespace that would otherwise show as a dangling ghost line.
+ * Drop a leading newline the model sometimes emits, cut trailing whitespace
+ * that would otherwise show as a dangling ghost line, and cap the result to
+ * `maxLines` (0 disables the cap) so completions stay short and focused.
  */
-function trimCompletion(text: string): string {
-  return text.replace(/^\n/, "").replace(/\s+$/, "");
+function trimCompletion(text: string, maxLines: number): string {
+  let out = text.replace(/^\n/, "").replace(/\s+$/, "");
+  if (maxLines > 0) {
+    const lines = out.split("\n");
+    if (lines.length > maxLines) {
+      out = lines.slice(0, maxLines).join("\n");
+    }
+  }
+  return out;
 }
 
 /** Resolve to true if the delay elapsed, false if cancelled first. */
